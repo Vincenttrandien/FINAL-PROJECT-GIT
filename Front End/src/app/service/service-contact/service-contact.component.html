@@ -1,0 +1,168 @@
+<div class="container-fluid">
+    <div class="card-box">
+      <div class="row form-group">
+        <div class="col-6 col-lg-8">
+          <h3 class="title font-weight-bold col-form-label">Contact Form</h3>
+  <!--
+          <input ngbDatepicker [ngClass]="{ 'is-invalid': submitted && f.dateUpdate.errors }" class="form-control"
+          placeholder="dd/MM/yyyy" autocomplete="off" id="name" readonly
+          formControlName="dateUpdate" #dateUpdate="ngbDatepicker">
+   <div class="input-group-append" (click)="dateUpdate.toggle()">
+       <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+   </div> -->
+  
+        </div>
+      </div>
+      <div class="row form-group">
+        <div class="col-6 col-sm-5 col-md-5 col-lg-4">
+          <input class="form-control" (keydown.enter)="getCategoryList()"
+          [(ngModel)]="searchKey" placeholder="Search key">
+        </div>
+        <div class="col-6 col-sm-5 col-md-3 col-lg-3">
+          <ng-select class="responsived" placeholder="School Year" [items]="yearList" (change)="getCategoryList()"
+                     [(ngModel)]="year" [clearable]="false"></ng-select>
+        </div>
+      </div>
+    </div>
+  
+    <div class="card-box row">
+      <div class="col-12 table-responsive" style="overflow-x:auto !important;">
+        <table class="table table-hover">
+          <thead>
+            <tr class="text-center">
+              <th id="no" class="px-0">No.</th>
+              <th id="name">Name</th>
+              <!-- <th>Role</th> -->
+              <th id="email">Email</th>
+              <th id="phoneNumber">Phone Number</th>
+              <th id="options">Options</th>
+              <th id="action">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="!contactList || contactList.length < 1">
+              <td class="text-center" colspan="6">No Data</td>
+            </tr>
+  
+            <tr *ngFor="let item of contactList; let i = index">
+                <td id="no" class="text-center">{{((pageNum - 1) * pageSize) + i + 1 }}</td>
+                <td id="name" class="text-primary" (click)="viewModal(item, view)">{{item?.name}}</td>
+                <td id="email" class="text-break">{{item?.email}}</td>
+                <td id="phoneNumber">{{item?.phoneNumber}}</td>
+                <td id="options">{{item?.options}}</td>
+                <td id="action" class="text-center px-0">
+                  <!-- <button class="btn btn-link text-dark" (click)="viewModal(item, view)"><i class="far fa-eye"></i></button> -->
+                  <!-- <button class="btn btn-link text-primary" (click)="editModal(item, edit)"><i class="fas fa-user-edit"></i></button> -->
+                  <button class="btn btn-link text-danger" (click)="deleteCategory(item)"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="row justify-content-md-between align-items-md-center">
+          <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 d-none d-md-block">
+              <div class="dataTables_length" id="tickets-table_length"><label
+                      class="d-inline-flex align-items-center">There
+                      <select (change)="onPageSizeChange($event.target.value)" aria-controls="tickets-table"
+                          class="custom-select custom-select-sm form-control form-control-sm mx-2"
+                          name="pageSize">
+                          <option [value]="10">10</option>
+                          <option [value]="25">25</option>
+                          <option [value]="50">50</option>
+                          <option [value]="100">100</option>
+                      </select> lines</label>
+              </div>
+          </div>
+  
+          <div class="col-xl-4 col-lg-3 mt-2 mt-md-0 d-none d-lg-block m-mb-8">
+              There are {{ totalElements === 0 ? 0 : (pageNum - 1) * pageSize + 1 }}
+              - {{ (pageNum - 1) * pageSize + contactList?.length }} on {{ totalElements }}
+          </div> <!-- end col-->
+  
+          <div class="col-xl-5 col-lg-6 col-md-8 col-sm-8">
+              <div class="text-md-right float-md-right mt-2">
+                  <ngb-pagination (pageChange)="onPageChange($event)" [(page)]="pageNum"
+                      [collectionSize]="totalElements" [maxSize]="maxSize" [pageSize]="pageSize" [rotate]="true">
+                  </ngb-pagination>
+                  <!--Pagination-->
+              </div>
+          </div> <!-- end col-->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #view>
+    <div class="">
+      <h4 class="float-left mt-3 ml-3">Contact Information</h4>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="contactForm">
+        <div class="row form-group">
+          <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <label class="font-weight-bold">Name:</label>
+          </div>
+          <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+            <input class="form-control" formControlName="name" placeholder="name" disabled>
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <label class="font-weight-bold">Email:</label>
+          </div>
+          <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+            <input class="form-control" formControlName="email" placeholder="Email" disabled>
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <label class="font-weight-bold">Phone Number:</label>
+          </div>
+          <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+            <input class="form-control" formControlName="phoneNumber" disabled>
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <label class="font-weight-bold">Options:</label>
+          </div>
+          <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+            <input class="form-control" formControlName="options" disabled>
+          </div>
+        </div>
+        <div class="row form-group">
+          <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4">
+            <label class="font-weight-bold">Descriptions:</label>
+          </div>
+          <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+            <input class="form-control" formControlName="description" disabled>
+          </div>
+        </div>
+        <!-- <div class="row form-group">
+          <div class="col-lg-4">
+            <label class="font-weight-bold">Role:</label>
+          </div>
+          <div class="col-lg-8">
+            <input class="form-control" formControlName="role" placeholder="Choose Role" disabled>
+          </div>
+        </div> -->
+        <!-- <div class="row form-group">
+          <div class="col-lg-4">
+            <label class="font-weight-bold">Faculty:</label>
+          </div>
+          <div class="col-lg-8">
+            <input class="form-control" formControlName="faculty" placeholder="Choose Faculty" disabled>
+          </div>
+        </div> -->
+  
+        <div class="row form-group">
+          <div class="col-lg-12 text-center">
+            <button class="btn btn-secondary btnfont" (click)="closeModal()">
+              <i class="fas fa-times-circle"></i> Close</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+  
+  
+  
